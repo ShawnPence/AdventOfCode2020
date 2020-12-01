@@ -6,7 +6,7 @@ namespace AdventOfCode2020
 	{
 		static void Main(string[] args)
 		{
-			Console.WriteLine("AdventOfCode2020");
+			Day1.Problem2();
 		}
 	}
 }
