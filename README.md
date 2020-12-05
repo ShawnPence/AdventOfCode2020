@@ -6,7 +6,7 @@ Notes:
 
 * I'm completing this year's puzzles using C# in a .Net 5 console application
 
-* For the Advent of Code puzzles, I typically create one class file per day with each of the two parts of that day's puzzle as its own method.
+* For the Advent of Code puzzles, I typically create one class file per day.
 
 * I try to complete the puzzles as quickly as possible when they are released each day. This means that the code does not test for edge cases, validate inputs, etc., and is not a reflection of the type of code I would write for use in a production environment and may not be suitable for use in other projects (and the code in this repository is not intended for any use other than my Advent of Code solutions)
 
