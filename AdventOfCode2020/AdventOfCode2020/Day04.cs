@@ -45,30 +45,31 @@ namespace AdventOfCode2020
 					{
 						var fieldType = field.Split(':')[0];
 						var fieldValue = field.Split(':')[1].Trim();
+						int value;
 						switch (fieldType)
 						{
 							case "byr":
 								b = true;
-								if (fieldValue.Length == 4 && int.TryParse(fieldValue, out _) && int.Parse(fieldValue) >= 1920 && int.Parse(fieldValue) <= 2002) b2 = true;
+								if (fieldValue.Length == 4 && int.TryParse(fieldValue, out value) && value >= 1920 && value <= 2002) b2 = true;
 								break;
 							case "iyr":
 								i = true;
-								if (fieldValue.Length == 4 && int.TryParse(fieldValue, out _) && int.Parse(fieldValue) >= 2010 && int.Parse(fieldValue) <= 2020) i2 = true;
+								if (fieldValue.Length == 4 && int.TryParse(fieldValue, out value) && value >= 2010 && value <= 2020) i2 = true;
 								break;
 							case "eyr":
 								e = true;
-								if (fieldValue.Length == 4 && int.TryParse(fieldValue, out _) && int.Parse(fieldValue) >= 2020 && int.Parse(fieldValue) <= 2030) e2 = true;
+								if (fieldValue.Length == 4 && int.TryParse(fieldValue, out value) && value >= 2020 && value <= 2030) e2 = true;
 								break;
 							case "hgt":
 								h = true;
 								var hNum = fieldValue.Substring(0, fieldValue.Length - 2);
 								if (fieldValue.EndsWith("cm"))
 								{
-									if (int.TryParse(hNum, out _) && int.Parse(hNum) >= 150 && int.Parse(hNum) <= 193) h2 = true;
+									if (int.TryParse(hNum, out value) && value >= 150 && value <= 193) h2 = true;
 								}
 								else if (fieldValue.EndsWith("in"))
 								{
-									if (int.TryParse(hNum, out _) && int.Parse(hNum) >= 59 && int.Parse(hNum) <= 76) h2 = true;
+									if (int.TryParse(hNum, out value) && value >= 59 && value <= 76) h2 = true;
 								}
 								break;
 							case "hcl":
