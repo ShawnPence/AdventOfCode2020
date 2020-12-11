@@ -12,108 +12,67 @@ namespace AdventOfCode2020
 		{
 			var input = FileReader.ReadLines("Inputs\\day11.txt");
 			
-			char[,] map = new char[input[0].Length + 2, input.Count + 2];
-			char[,] map2 = new char[input[0].Length + 2, input.Count + 2];
+			char[,] map1 = new char[input[0].Length, input.Count];
+			char[,] map2 = new char[input[0].Length, input.Count];
 			
 			for (int y = 0; y < input.Count; y++)
 			{
 				for (int x = 0; x < input[y].Length; x++)
 				{
-					map[x + 1, y + 1] = input[y][x];
-					map2[x + 1, y + 1] = input[y][x];
+					map1[x, y] = input[y][x];
+					map2[x, y] = input[y][x];
 				}
 			}
 
-			bool changed = true;
+			bool changed1 = true;
+			while (changed1 == true)
+			{
+				(map1, changed1) = Next(map1, 1); 
+			}
+			Console.WriteLine($"Part 1: {CountItems(map1,'#')}");
+			
 
-			while (changed == true)
+			bool changed2 = true;
+			while (changed2 == true)
 			{
-				(map, changed) = Next1(map);
+				(map2, changed2) = Next(map2, 2);
 			}
-			var result1 = 0;
-			for (int x = 1; x < map.GetLength(0) - 1; x++)
-			{
-				for (int y = 1; y < map.GetLength(1) - 1; y++)
-				{
-					if (map[x, y] == '#') result1++;
-				}
-			}
-			Console.WriteLine(result1);
-
-			changed = true;
-			while (changed == true)
-			{
-				(map2, changed) = Next2(map2);
-			}
-			var result2 = 0;
-			for (int x = 1; x < map2.GetLength(0) - 1; x++)
-			{
-				for (int y = 1; y < map2.GetLength(1) - 1; y++)
-				{
-					if (map2[x, y] == '#') result2++;
-				}
-			}
-			Console.WriteLine(result2);
+			Console.WriteLine($"Part 1: {CountItems(map2, '#')}");
 
 		}
 
-		public static (char[,] next,bool changed) Next1(char[,] map)
+		public static int CountItems(char[,] map, char item)
 		{
-			var next = new char[map.GetLength(0), map.GetLength(1)];
-			bool changed = false;
-			for (int x = 1; x < next.GetLength(0) - 1; x++)
+			var result = 0;
+			for (int x = 0; x < map.GetLength(0); x++)
 			{
-				for (int y = 1; y < next.GetLength(1) - 1; y++)
+				for (int y = 0; y < map.GetLength(1); y++)
 				{
-					int count = 0;
-					for (int dx = -1; dx <= 1; dx++)
-					{
-						for (int dy = -1; dy <= 1; dy++)
-						{
-							if (dx == 0 && dy == 0) continue;
-							count += map[x + dx, y + dy] == '#' ? 1 : 0;
-						}
-					}
-
-					if (map[x, y] == '#' && count >= 4)
-					{
-						next[x, y] = 'L';
-						changed = true;
-					}
-					else if (map[x, y] == 'L' && count == 0)
-					{
-						next[x, y] = '#';
-						changed = true;
-					}
-					else
-					{
-						next[x, y] = map[x, y];
-					}
+					if (map[x, y] == item) result++;
 				}
 			}
-
-			return (next, changed);
+			return result;
 		}
-
-		
-		public static int find(char[,] map, int x, int y,  int dx, int dy)
+	
+		public static int Find(char[,] map, int x, int y,  int dx, int dy, int part)
 		{
-			while (x > 0 && y > 0 && x < map.GetLength(0) - 1 && y < map.GetLength(1))
+			while (x >= 0 && y >= 0 && x < map.GetLength(0) && y < map.GetLength(1))
 			{
 				if (map[x, y] != '.') return map[x, y] == '#' ? 1 : 0;
 				x += dx;
 				y += dy;
+				if (part == 1) break;
 			}
 			return 0;
 		}
 
-		public static (char[,] next, bool changed) Next2(char[,] map)
+		public static (char[,] next, bool changed) Next(char[,] map, int part)
 		{
 			var next = new char[map.GetLength(0), map.GetLength(1)];
 			bool changed = false;
-			for (int x = 1; x < next.GetLength(0) - 1; x++)
+			for (int x = 0; x < next.GetLength(0); x++)
 			{
-				for (int y = 1; y < next.GetLength(1) - 1; y++)
+				for (int y = 0; y < next.GetLength(1); y++)
 				{
 					int count = 0;
 					for (int dx = -1; dx <= 1; dx++)
@@ -121,11 +80,11 @@ namespace AdventOfCode2020
 						for (int dy = -1; dy <= 1; dy++)
 						{
 							if (dx == 0 && dy == 0) continue;
-							count += find(map, x + dx, y + dy, dx, dy);
+							count += Find(map, x + dx, y + dy, dx, dy, part);
 						}
 					}
 
-					if (map[x, y] == '#' && count >= 5)
+					if (map[x, y] == '#' && count >= (part == 1 ? 4 : 5))
 					{
 						next[x, y] = 'L';
 						changed = true;
@@ -141,8 +100,6 @@ namespace AdventOfCode2020
 					}
 				}
 			}
-
-
 			return (next, changed);
 		}
 	}
