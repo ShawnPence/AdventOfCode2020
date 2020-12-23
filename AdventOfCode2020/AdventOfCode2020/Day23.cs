@@ -14,7 +14,8 @@ namespace AdventOfCode2020
 			//puzzle input number from Advent of Code day 23 puzzle
 			Console.WriteLine("Day 23 puzzle starting value: ");
 			var input = Console.ReadLine();
-			
+
+
 			List<int> part1Input = new List<int>();
 			
 			for(int i = 0; i < input.Length; i++)
@@ -46,43 +47,24 @@ namespace AdventOfCode2020
 
 
 			//Part 2
-			int i2 = 1;
 
-			Node first = new Node(part2Input[0]);
-			Node last = first;
-			Dictionary<int, Node> nodes = new Dictionary<int, Node>();
-			nodes[part2Input[0]] = first;
-			while(i2 < part2Input.Count)
-			{
-				var temp = new Node(part2Input[i2]);
-				last.Next = temp;
-				nodes[part2Input[i2]] = temp;
-				last = last.Next;
-				i2++;
-			}
-			i2 = 10;
-			while(i2 <= 1000000)
-			{
-				var temp = new Node(i2);
-				last.Next = temp;
-				nodes[i2] = temp;
-				last = last.Next;
-				i2++;
-			}
-			last.Next = first;
-			
-			for(int i = 0; i < 10000000; i++)
-			{
-				first = Part2(first, nodes);
-			}
+			//after solving the puzzle, I realized I could create a better solution.
+			//both of my solutions appear below for performance comparison purposes
 
-			long result2 = 1;
-			var node = nodes[1].Next;
-			result2 *= node.Value;
-			node = node.Next;
-			result2 *= node.Value;
+			Stopwatch stopwatch1 = new Stopwatch();
+			stopwatch1.Start();
+			long result2Improved = Part2Improved(part2Input);
+			stopwatch1.Stop();
+			Console.WriteLine($"Part 2 (using improved solution): {result2Improved} completed in {stopwatch1.ElapsedMilliseconds} ms");
 
-			Console.WriteLine($"Part 2: {result2}");
+
+
+			Stopwatch stopwatch2 = new Stopwatch();
+			stopwatch2.Start();
+			long result2 = Part2Original(part2Input);
+			stopwatch2.Stop();
+
+			Console.WriteLine($"Part 2: {result2} completed in {stopwatch2.ElapsedMilliseconds} ms");
 
 		}
 
@@ -108,32 +90,112 @@ namespace AdventOfCode2020
 			input.RemoveRange(0, 4);
 		}
 
-		public static Node Part2(Node first,  Dictionary<int,Node> nodes)
+		public static long Part2Improved(List<int> input)
 		{
-			var node0 = first;
-			var node1 = node0.Next;
-			var node2 = node1.Next;
-			var node3 = node2.Next;
 
-			var moveAfter = first.Value - 1;
-			if (moveAfter == 0) moveAfter = 1000000;
-			while (moveAfter == node0.Value || moveAfter == node1.Value || moveAfter == node2.Value || moveAfter == node3.Value)
+			int[] numbers = new int[1000001];
+			int current = input[0];
+			for (int i = 0; i < input.Count - 1; i++)
 			{
-				moveAfter--;
+				numbers[input[i]] = input[i + 1];
+			}
+			numbers[input[input.Count - 1]] = 10;
+			for (int i = 10; i < 1000000; i++)
+			{
+				numbers[i] = i + 1;
+			}
+			numbers[1000000] = current;
+
+			for (int i = 1; i <= 10000000; i++)
+			{
+				int next1 = numbers[current];
+				int next2 = numbers[next1];
+				int next3 = numbers[next2];
+				int newCurrent = numbers[next3];
+				int moveAfter = current - 1;
 				if (moveAfter == 0) moveAfter = 1000000;
+				while (moveAfter == next1 || moveAfter == next2 || moveAfter == next3)
+				{
+					moveAfter--;
+					if (moveAfter == 0) moveAfter = 1000000;
+				}
+
+				int remaining = numbers[moveAfter];
+				numbers[current] = newCurrent;
+				numbers[moveAfter] = next1;
+				numbers[next3] = remaining;
+				current = newCurrent;
 			}
 
-			var newFirst = node3.Next;
+			int resultValue1 = numbers[1];
+			int resultValue2 = numbers[resultValue1];
+			return Convert.ToInt64(resultValue1) * Convert.ToInt64(resultValue2);
+		}
 
-			var remaining = nodes[moveAfter].Next;
-		
-			nodes[moveAfter].Next = node1;
 
-			node3.Next = remaining;
-			
-			node0.Next = newFirst;
+		public static long Part2Original(List<int> input)
+		{
+			int i2 = 1;
 
-			return newFirst;
+			Node first = new Node(input[0]);
+			Node last = first;
+			Dictionary<int, Node> nodes = new Dictionary<int, Node>();
+			nodes[input[0]] = first;
+			while (i2 < input.Count)
+			{
+				var temp = new Node(input[i2]);
+				last.Next = temp;
+				nodes[input[i2]] = temp;
+				last = last.Next;
+				i2++;
+			}
+			i2 = 10;
+			while (i2 <= 1000000)
+			{
+				var temp = new Node(i2);
+				last.Next = temp;
+				nodes[i2] = temp;
+				last = last.Next;
+				i2++;
+			}
+			last.Next = first;
+
+			for (int i = 1; i <= 10000000; i++)
+			{
+				var node0 = first;
+				var node1 = node0.Next;
+				var node2 = node1.Next;
+				var node3 = node2.Next;
+
+				var moveAfter = first.Value - 1;
+				if (moveAfter == 0) moveAfter = 1000000;
+				while (moveAfter == node0.Value || moveAfter == node1.Value || moveAfter == node2.Value || moveAfter == node3.Value)
+				{
+					moveAfter--;
+					if (moveAfter == 0) moveAfter = 1000000;
+				}
+
+				var newFirst = node3.Next;
+
+				var remaining = nodes[moveAfter].Next;
+
+				nodes[moveAfter].Next = node1;
+
+				node3.Next = remaining;
+
+				node0.Next = newFirst;
+
+				first = newFirst;
+
+			}
+
+			long result2 = 1;
+			var node = nodes[1].Next;
+			result2 *= node.Value;
+			node = node.Next;
+			result2 *= node.Value;
+
+			return result2;
 
 		}
 
